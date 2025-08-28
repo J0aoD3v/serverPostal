@@ -19,7 +19,7 @@ public class TCPClient {
                 msg = teclado.readLine();
                 out.println(msg);
                 if (msg.equalsIgnoreCase("FIM")) {
-                    System.out.println("Conexão encerrada");
+                    System.out.println("Conexao encerrada");
                     break;
                 }
             }

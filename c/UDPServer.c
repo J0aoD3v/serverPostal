@@ -16,7 +16,7 @@ int main() {
 
     SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd == INVALID_SOCKET) {
-        printf("Falha na criação do socket: %d\n", WSAGetLastError());
+        printf("Falha na criacao do socket: %d\n", WSAGetLastError());
         WSACleanup();
         return 1;
     }

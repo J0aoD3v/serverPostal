@@ -24,7 +24,7 @@ public class UDPClient {
                 socket.send(packet);
 
                 if (msg.equalsIgnoreCase("FIM")) {
-                    System.out.println("Conexão encerrada");
+                    System.out.println("Conexao encerrada");
                     break;
                 }
             }

@@ -16,7 +16,7 @@ int main() {
 
     SOCKET server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd == INVALID_SOCKET) {
-        printf("Falha na criação do socket: %d\n", WSAGetLastError());
+        printf("Falha na criacao do socket: %d\n", WSAGetLastError());
         WSACleanup();
         return 1;
     }
@@ -51,7 +51,7 @@ int main() {
             continue;
         }
 
-        printf("CONEXÃO ESTABELECIDA COM %s\n", inet_ntoa(address.sin_addr));
+        printf("CONEXAO ESTABELECIDA COM %s\n", inet_ntoa(address.sin_addr));
 
         char buffer[BUFFER_SIZE];
         int bytes_received;

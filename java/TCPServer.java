@@ -11,7 +11,7 @@ public class TCPServer {
         try (ServerSocket serverSocket = new ServerSocket(porta)) {
             while (true) {
                 Socket socket = serverSocket.accept();
-                System.out.println("CONECÇÃO ESTABELECIDA COM " + socket.getInetAddress().getHostAddress());
+                System.out.println("CONEXAO ESTABELECIDA COM " + socket.getInetAddress().getHostAddress());
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String msg;

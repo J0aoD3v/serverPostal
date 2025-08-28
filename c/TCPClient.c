@@ -16,7 +16,7 @@ int main() {
 
     SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == INVALID_SOCKET) {
-        printf("Falha na criação do socket: %d\n", WSAGetLastError());
+        printf("Falha na criacao do socket: %d\n", WSAGetLastError());
         WSACleanup();
         return 1;
     }
@@ -27,14 +27,14 @@ int main() {
 
     char *host = "127.0.0.1";
     if (inet_pton(AF_INET, host, &serv_addr.sin_addr) <= 0) {
-        printf("Endereço inválido\n");
+        printf("Endereco invalido\n");
         closesocket(sock);
         WSACleanup();
         return 1;
     }
 
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == SOCKET_ERROR) {
-        printf("Falha na conexão: %d\n", WSAGetLastError());
+        printf("Falha na conexao: %d\n", WSAGetLastError());
         closesocket(sock);
         WSACleanup();
         return 1;
@@ -58,7 +58,7 @@ int main() {
         }
 
         if (_stricmp(buffer, "FIM") == 0) {
-            printf("Conexão encerrada\n");
+            printf("Conexao encerrada\n");
             break;
         }
     }
