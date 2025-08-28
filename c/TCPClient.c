@@ -1,69 +1,69 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
 #define PORTA 8089
 #define BUFFER_SIZE 1024
 
 int main() {
-    int sock = 0;
-    struct sockaddr_in serv_addr;
-    char buffer[BUFFER_SIZE] = {0};
-    char *host = "127.0.0.1";
-    
-    printf("Digite mensagens (escreva 'FIM' para encerrar):\n");
-    
-    // Criar socket
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        perror("Falha na criação do socket");
-        return -1;
+    WSADATA wsaData;
+    if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0) {
+        printf("Falha no WSAStartup\n");
+        return 1;
     }
-    
+
+    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock == INVALID_SOCKET) {
+        printf("Falha na criação do socket: %d\n", WSAGetLastError());
+        WSACleanup();
+        return 1;
+    }
+
+    struct sockaddr_in serv_addr;
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(PORTA);
-    
-    // Converter endereço IP
+
+    char *host = "127.0.0.1";
     if (inet_pton(AF_INET, host, &serv_addr.sin_addr) <= 0) {
-        perror("Endereço inválido");
-        close(sock);
-        return -1;
+        printf("Endereço inválido\n");
+        closesocket(sock);
+        WSACleanup();
+        return 1;
     }
-    
-    // Conectar ao servidor
-    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-        perror("Falha na conexão");
-        close(sock);
-        return -1;
+
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == SOCKET_ERROR) {
+        printf("Falha na conexão: %d\n", WSAGetLastError());
+        closesocket(sock);
+        WSACleanup();
+        return 1;
     }
-    
+
+    printf("Digite mensagens (escreva 'FIM' para encerrar):\n");
+
+    char buffer[BUFFER_SIZE];
     while (1) {
         printf("Cliente >> ");
         fflush(stdout);
-        
-        // Ler entrada do usuário
-        if (fgets(buffer, BUFFER_SIZE, stdin) == NULL) {
+
+        if (fgets(buffer, BUFFER_SIZE, stdin) == NULL)
+            break;
+
+        buffer[strcspn(buffer, "\n")] = 0; // remove \n
+
+        if (send(sock, buffer, strlen(buffer), 0) == SOCKET_ERROR) {
+            printf("Falha no envio: %d\n", WSAGetLastError());
             break;
         }
-        
-        // Remover quebra de linha
-        buffer[strcspn(buffer, "\n")] = 0;
-        
-        // Enviar mensagem
-        if (send(sock, buffer, strlen(buffer), 0) < 0) {
-            perror("Falha no envio");
-            break;
-        }
-        
-        if (strcasecmp(buffer, "FIM") == 0) {
+
+        if (_stricmp(buffer, "FIM") == 0) {
             printf("Conexão encerrada\n");
             break;
         }
     }
-    
-    close(sock);
+
+    closesocket(sock);
+    WSACleanup();
     return 0;
 }

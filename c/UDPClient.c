@@ -1,65 +1,65 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
 #define PORTA 8089
 #define BUFFER_SIZE 1024
 
 int main() {
-    int sockfd;
-    struct sockaddr_in servaddr;
-    char buffer[BUFFER_SIZE];
-    char *host = "127.0.0.1";
-    
-    printf("Digite mensagens (escreva 'FIM' para encerrar):\n");
-    
-    // Criar socket UDP
-    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-        perror("Falha na criação do socket");
-        exit(EXIT_FAILURE);
+    WSADATA wsaData;
+    if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0) {
+        printf("Falha no WSAStartup\n");
+        return 1;
     }
-    
+
+    SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd == INVALID_SOCKET) {
+        printf("Falha na criação do socket: %d\n", WSAGetLastError());
+        WSACleanup();
+        return 1;
+    }
+
+    struct sockaddr_in servaddr;
     memset(&servaddr, 0, sizeof(servaddr));
-    
-    // Configurar endereço do servidor
+
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(PORTA);
-    
+
+    char *host = "127.0.0.1";
     if (inet_pton(AF_INET, host, &servaddr.sin_addr) <= 0) {
-        perror("Endereço inválido");
-        close(sockfd);
-        exit(EXIT_FAILURE);
+        printf("Endereço inválido\n");
+        closesocket(sockfd);
+        WSACleanup();
+        return 1;
     }
-    
+
+    char buffer[BUFFER_SIZE];
+
+    printf("Digite mensagens (escreva 'FIM' para encerrar):\n");
     while (1) {
         printf("Cliente >> ");
         fflush(stdout);
-        
-        // Ler entrada do usuário
-        if (fgets(buffer, BUFFER_SIZE, stdin) == NULL) {
+
+        if (fgets(buffer, BUFFER_SIZE, stdin) == NULL)
             break;
-        }
-        
-        // Remover quebra de linha
+
         buffer[strcspn(buffer, "\n")] = 0;
-        
-        // Enviar dados para o servidor
+
         if (sendto(sockfd, buffer, strlen(buffer), 0, 
-                  (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
-            perror("Falha no envio");
+                   (const struct sockaddr *)&servaddr, sizeof(servaddr)) == SOCKET_ERROR) {
+            printf("Falha no envio: %d\n", WSAGetLastError());
             continue;
         }
-        
-        if (strcasecmp(buffer, "FIM") == 0) {
+
+        if (_stricmp(buffer, "FIM") == 0) {
             printf("Conexão encerrada\n");
             break;
         }
     }
-    
-    close(sockfd);
+
+    closesocket(sockfd);
+    WSACleanup();
     return 0;
 }

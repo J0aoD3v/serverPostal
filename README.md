@@ -14,6 +14,7 @@ Servidor e cliente para envio de mensagens em **Java** e **C**, suportando **TCP
   - Servidor deve ser encerrado manualmente com `Ctrl + C`.
 
 - Comunicação **UDP**:
+
   - Cliente envia pacotes de mensagens para o servidor.
   - Servidor exibe mensagens recebidas com o endereço do remetente.
   - Encerramento do cliente com a palavra `FIM`.
@@ -49,15 +50,20 @@ SERVERPOSTAL/
 ### Para C
 
 - **GCC** ou outro compilador C.
-- Sistema operacional compatível com POSIX (Linux, macOS, WSL no Windows).
+- Sistema operacional compatível:
+
+  - **Linux / macOS / WSL**
+  - **Windows** (versões adaptadas com Winsock)
+
+- No Windows, é necessário **linkar a biblioteca `ws2_32`** ao compilar (`-lws2_32`).
 
 ---
 
 ## Como usar
 
-## Versão Java
+### Versão Java
 
-### TCP
+#### TCP
 
 1. Navegue até a pasta Java:
 
@@ -91,9 +97,7 @@ FIM
 
 6. Para encerrar o servidor, pressione `Ctrl + C`.
 
----
-
-### UDP
+#### UDP
 
 1. Navegue até a pasta Java:
 
@@ -129,9 +133,9 @@ FIM
 
 ---
 
-## Versão C
+### Versão C
 
-### TCP
+#### TCP
 
 1. Navegue até a pasta C:
 
@@ -139,36 +143,43 @@ FIM
 cd c/
 ```
 
-2. Compile os arquivos:
+2. **Linux/macOS/WSL**
 
 ```bash
 gcc -o tcp_server TCPServer.c
 gcc -o tcp_client TCPClient.c
 ```
 
-3. Execute o servidor:
+3. **Windows**
 
-```bash
-./tcp_server
+```powershell
+gcc -o tcp_server TCPServer.c -lws2_32
+gcc -o tcp_client TCPClient.c -lws2_32
 ```
 
-4. Execute o cliente (em outro terminal):
+4. Execute o servidor:
 
 ```bash
-./tcp_client
+./tcp_server   # Linux/macOS/WSL
+.\tcp_server.exe # Windows
 ```
 
-5. No cliente, digite mensagens. Para encerrar, digite:
+5. Execute o cliente (em outro terminal):
+
+```bash
+./tcp_client   # Linux/macOS/WSL
+.\tcp_client.exe # Windows
+```
+
+6. No cliente, digite mensagens. Para encerrar, digite:
 
 ```
 FIM
 ```
 
-6. Para encerrar o servidor, pressione `Ctrl + C`.
+7. Para encerrar o servidor, pressione `Ctrl + C`.
 
----
-
-### UDP
+#### UDP
 
 1. Navegue até a pasta C:
 
@@ -176,32 +187,41 @@ FIM
 cd c/
 ```
 
-2. Compile os arquivos:
+2. **Linux/macOS/WSL**
 
 ```bash
 gcc -o udp_server UDPServer.c
 gcc -o udp_client UDPClient.c
 ```
 
-3. Execute o servidor:
+3. **Windows**
 
-```bash
-./udp_server
+```powershell
+gcc -o udp_server UDPServer.c -lws2_32
+gcc -o udp_client UDPClient.c -lws2_32
 ```
 
-4. Execute o cliente (em outro terminal):
+4. Execute o servidor:
 
 ```bash
-./udp_client
+./udp_server   # Linux/macOS/WSL
+.\udp_server.exe # Windows
 ```
 
-5. No cliente, digite mensagens. Para encerrar, digite:
+5. Execute o cliente (em outro terminal):
+
+```bash
+./udp_client   # Linux/macOS/WSL
+.\udp_client.exe # Windows
+```
+
+6. No cliente, digite mensagens. Para encerrar, digite:
 
 ```
 FIM
 ```
 
-6. Para encerrar o servidor, pressione `Ctrl + C`.
+7. Para encerrar o servidor, pressione `Ctrl + C`.
 
 ---
 
@@ -216,10 +236,10 @@ FIM
 
 ### Pasta `c/`
 
-- `TCPServer.c` – Servidor TCP implementado em C.
-- `TCPClient.c` – Cliente TCP implementado em C.
-- `UDPServer.c` – Servidor UDP implementado em C.
-- `UDPClient.c` – Cliente UDP implementado em C.
+- `TCPServer.c` – Servidor TCP implementado em C (compatível com Linux e Windows).
+- `TCPClient.c` – Cliente TCP implementado em C (compatível com Linux e Windows).
+- `UDPServer.c` – Servidor UDP implementado em C (compatível com Linux e Windows).
+- `UDPClient.c` – Cliente UDP implementado em C (compatível com Linux e Windows).
 
 ---
 
@@ -230,3 +250,4 @@ FIM
 - Servidores não possuem encerramento automático via mensagem; use `Ctrl + C` para interrompê-los.
 - A porta padrão utilizada é **8089** em ambas as implementações.
 - As implementações em Java e C são funcionalmente equivalentes e podem interoperar entre si.
+- No Windows, lembre-se de linkar a biblioteca `ws2_32` para as versões C.
